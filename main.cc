@@ -1,3 +1,6 @@
+#include "color.h"
+#include "vec3.h"
+
 #include <iostream>
 #include <fstream>
 
@@ -16,15 +19,8 @@ int main(){
             std::clog << "\rScanlines remaining : " << (height - y) << ' ' << std::flush;
             
             for(int x=0; x<width; x++){
-                double r = double(x) / width;
-                double g = double(y) / height;
-                double b = 0.5;
-
-                int ir = int(255.999 * r);
-                int ig = int(255.999 * g);
-                int ib = int(255.999 * b);
-
-                imageFS << ir << ' ' << ig << ' ' << ib << '\n';
+                auto pixel_color = color(double(x) / (width-1), double(y) / (height - 1), 0.0);
+                write_color(imageFS, pixel_color);
             }
         }
 
