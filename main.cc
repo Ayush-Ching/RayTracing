@@ -1,19 +1,38 @@
-#include<iostream>
+#include <iostream>
+#include <fstream>
 
 int main(){
 
-    freopen("img/image.ppm", "w", stdout);
+    std::ofstream imageFS("img/image.ppm");
 
-    int width  = 256;
-    int height = 256;
+    int width  = 512;
+    int height = 512;
 
-    std::cout << "P3\n" << width << ' ' << height << "\n255\n";
+    if(imageFS.is_open()){
 
-    for(int y=0; y<height; y++){
-        for(int x=0; x<width; x++){
-            int col = (x/32 + y/32) % 2 == 0 ? 128 : 64;
-            std::cout << col + (x + y) / 4 << ' ' << col + x / 2 << ' ' << col + y / 2 << '\n';
+        imageFS << "P3\n" << width << ' ' << height << "\n255\n";
+
+        for(int y=0; y<height; y++){
+            std::clog << "\rScanlines remaining : " << (height - y) << ' ' << std::flush;
+            
+            for(int x=0; x<width; x++){
+                double r = double(x) / width;
+                double g = double(y) / height;
+                double b = 0.5;
+
+                int ir = int(255.999 * r);
+                int ig = int(255.999 * g);
+                int ib = int(255.999 * b);
+
+                imageFS << ir << ' ' << ig << ' ' << ib << '\n';
+            }
         }
+
+        imageFS.close();
+        std::clog << "\rDone.                     \n";
+    }
+    else {
+        std::cerr << "Unable to open output image file location\n";
     }
 
     return 0;
