@@ -5,16 +5,24 @@
 #include <iostream>
 #include <fstream>
 
-color ray_color(const ray& ray){
-    // here we make the sky based on the magnitude of the y component of the unit vector, therefore we will get a slight horizontal gradient along with the vertical one.
-    // This does look better than taking straight y component of the ray.
+bool hit_sphere(const point3& center, double radius, const ray& r) {
+    vec3 oc = center - r.origin();
+    double a = dot(r.direction(), r.direction());
+    double b = -2.0 * dot(r.direction(), oc);
+    double c = dot(oc, oc) - radius * radius;
+    double discriminant = b * b - 4 * a * c;
+    return discriminant >= 0;
+}
+
+color ray_color(const ray& ray) {
+    if(hit_sphere(point3(0, 0, -1), 0.5, ray)) return color(1, 0, 0);
 
     vec3 unit_dir = unit_vector(ray.direction());
     double a = 0.5 * (unit_dir.y() + 1.0);
     return (1 - a) * color(1.0, 1.0, 1.0) + a * color(0.3, 0.5, 1.0);
 }
 
-int main(){
+int main() {
 
     std::ofstream imageFS("img/image.ppm");
 
@@ -43,7 +51,7 @@ int main(){
 
 
     // Render
-    if(imageFS.is_open()){
+    if(imageFS.is_open()) {
 
         imageFS << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
