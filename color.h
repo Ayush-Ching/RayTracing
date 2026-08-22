@@ -8,9 +8,9 @@
 using color = vec3;
 
 void write_color(std::ostream& out, const color& pixel_color) {
-    auto r = pixel_color.x();
-    auto g = pixel_color.y();
-    auto b = pixel_color.z();
+    double r = pixel_color.x();
+    double g = pixel_color.y();
+    double b = pixel_color.z();
 
     // scale [0, 1] to [1, 255]
     int rbyte = int(255.999 * r);
