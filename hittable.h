@@ -1,8 +1,6 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "ray.h"
-
 class hit_record {
     public:
         point3 p;
@@ -12,7 +10,7 @@ class hit_record {
 
         void set_face_normal(const ray& r, const vec3& outward_normal) {
             // here, outward normal is normalized.
-
+            
             front_face = dot(r.direction(), outward_normal) <= 0;
             normal = front_face ? outward_normal : -outward_normal;
         }
