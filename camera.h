@@ -94,12 +94,12 @@ class camera {
 
             if(world.hit(r, interval(0.001, infinity), rec)) {
                 vec3 direction = rec.normal + random_unit_vector();
-                return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+                return 0.15 * ray_color(ray(rec.p, direction), depth - 1, world);
             }
 
             vec3 unit_dir = unit_vector(r.direction());
             double a = 0.5 * (unit_dir.y() + 1.0);
-            return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.3, 0.5, 1.0);
+            return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.09, 0.25, 1.0);
         }
 };
 
