@@ -5,8 +5,8 @@
 
 class camera {
     public:
-        double aspect_ratio = 16.0 / 9.0;
-        int image_height = 512;
+        double aspect_ratio = 1.0;
+        int image_height = 100;
         int samples_per_pixel = 10;
 
         void render(const hittable& world, std::ostream& out) {
@@ -19,12 +19,14 @@ class camera {
                 
                 for(int x=0; x<image_width; x++){
                     color pixel_color(0, 0, 0);
+
+                    // randomly sample a square around our pixel
                     for(int sample = 1; sample < samples_per_pixel; sample++) {
                         ray r = get_ray(x, y);
                         pixel_color += ray_color(r, world);
                     }
                     
-                    // this is to sample the center of the pixel after sampling the random square around it
+                    // sample the center of the pixel
                     vec3 pixel_center = pixel00_loc + (x * pixel_delta_u) + (y * pixel_delta_v);
                     vec3 ray_dir = pixel_center - center;
                     ray r(center, ray_dir);
@@ -86,8 +88,10 @@ class camera {
 
         color ray_color(const ray& r, const hittable& world) const {
             hit_record rec;
+
             if(world.hit(r, interval(0, infinity), rec)) {
-                return 0.5 * (rec.normal + color(1, 1, 1));
+                vec3 direction = random_on_hemisphere(rec.normal);
+                return 0.5 * ray_color(ray(rec.p, direction), world);
             }
 
             vec3 unit_dir = unit_vector(r.direction());
