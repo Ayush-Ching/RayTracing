@@ -49,10 +49,10 @@ class metal : public material {
 
 class dielectric : public material {
     public:
-        dielectric(double refractive_index) : refractive_index(refractive_index) {}
+        dielectric(color albedo, double refractive_index) : albedo(albedo), refractive_index(refractive_index) {}
 
         bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const override {
-            attenuation = color(1.0, 1.0, 1.0);
+            attenuation = albedo;
             double ri = rec.front_face ? (1.0 / refractive_index) : refractive_index;
 
             vec3 unit_direction = unit_vector(r_in.direction());
@@ -72,6 +72,7 @@ class dielectric : public material {
         }
 
     private:
+        color albedo;
         double refractive_index;
 
         static double reflectance(double cosine, double refractive_index) {
