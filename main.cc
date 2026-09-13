@@ -33,6 +33,8 @@ int main() {
     cam.image_height = 512;
     cam.samples_per_pixel = 100;
     cam.max_depth = 10;
+
+    cam.vfov = 120;
     
     // Render
     if(imageFS.is_open()) {
