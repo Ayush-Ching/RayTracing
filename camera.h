@@ -6,12 +6,15 @@
 
 class camera {
     public:
-        double aspect_ratio = 1.0;
-        int image_height = 100;
-        int samples_per_pixel = 10;
-        int max_depth = 10;
+        double aspect_ratio      = 1.0;
+        int    image_height      = 100;
+        int    samples_per_pixel = 10;
+        int    max_depth         = 10;
 
-        double vfov = 90;  // vertical field of view in degrees
+        double vfov     = 90;                // vertical field of view in degrees
+        point3 lookfrom = point3(0, 0, 0);   // camera center
+        point3 lookat   = point3(0, 0, -1);  // self explanatory
+        vec3   vup      = vec3(0, 1, 0);     // camera-relative 'up' direction
 
         void render(const hittable& world, std::ostream& out) {
             initialize();
@@ -50,30 +53,36 @@ class camera {
         point3 pixel00_loc;
         vec3 pixel_delta_u;
         vec3 pixel_delta_v;
+        vec3 u, v, w;               // camera frame basis vectors
 
         void initialize() {
             image_width  = int(image_height * aspect_ratio) < 1 ? 1 : int(image_height * aspect_ratio);
 
             pixel_sample_scale = 1.0 / samples_per_pixel;
 
-            center = point3(0, 0, 0);
+            center = lookfrom;
 
-            double focal_length = 1.0;
+            double focal_length = (lookat - lookfrom).length();
             double theta = degrees_to_radians(vfov);
             double h = std::tan(theta / 2);
             double viewport_height = 2 * h * focal_length;
             double viewport_width = viewport_height * (double(image_width) / image_height);
 
+            // u, v, w
+            w = unit_vector(lookfrom - lookat);
+            u = unit_vector(cross(vup, w));
+            v = cross(w, u);
+
             // vectors across horizontal and vertical of viewport
-            vec3 viewport_u = vec3(viewport_width, 0, 0);
-            vec3 viewport_v = vec3(0, -viewport_height, 0);
+            vec3 viewport_u = viewport_width * u;
+            vec3 viewport_v = viewport_height * -v;
 
             // delta vectors from one pixel to another on viewport
             pixel_delta_u = viewport_u / image_width;
             pixel_delta_v = viewport_v / image_height;
 
             // upper left pixel
-            vec3 viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
+            vec3 viewport_upper_left = center - focal_length * w - viewport_u / 2 - viewport_v / 2;
             pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
         }
 
